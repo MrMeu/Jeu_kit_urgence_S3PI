@@ -1,0 +1,362 @@
+HTML
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Jeu d'Inventaire / Puzzle 4x6 Final</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .instructions {
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #bdc3c7;
+      text-align: center;
+    }
+    .game-container {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    /* GRILLE 4x6 */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-template-rows: repeat(6, 80px);
+      gap: 2px;
+      background-color: #34495e;
+      padding: 5px;
+      border: 3px solid #16a085;
+      /*border-radius: 8px;*/
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      background-color: #1a252f;
+      /*border-radius: 4px;*/
+    }
+    .cell.highlight {
+      background-color: #27ae60 !important;
+      opacity: 0.7;
+    }
+    .cell.invalid {
+      background-color: #e74c3c !important;
+      opacity: 0.7;
+    }
+
+    /* INVENTAIRE DES PIÈCES */
+    #inventory {
+      width: 500px;
+      min-height: 500px;
+      background-color: #34495e;
+      border: 3px solid #2980b9;
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-content: flex-start;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+
+    /* RENDER D'UNE PIÈCE */
+    .piece {
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.1s ease;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-origin: content-box;
+    }
+    .piece:active {
+      cursor: grabbing;
+    }
+    
+    /* Pièce placée sur le plateau */
+    .piece.placed {
+      position: absolute;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Puzzle d'Inventaire</h1>
+  <div class="instructions">
+    Glissez-déposez les objets sur la grille de 4×6.<br>
+    <strong>Astuce :</strong> Appuyez sur <kbd>R</kbd> ou <strong>double-cliquez</strong> sur une pièce pour la faire pivoter !
+  </div>
+
+  <div class="game-container">
+    <div id="grid"></div>
+    <div id="inventory"></div>
+  </div>
+
+  <script>
+    const CELL_SIZE = 80;
+    const GRID_COLS = 4;
+    const GRID_ROWS = 6;
+
+    // Définition de chaque pièce avec ses dimensions exactes (lignes x colonnes)
+    const piecesData = [
+      // Les 3 dernières images fournies
+      { id: 'pile', src: 'PIle.png', shape: [[0,0]] },                         // 2x1 (verticale)
+      { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]] },             // 2x1 (verticale)
+      { id: 'bouteille2', src: 'Src/images/Bouteille2.png', shape: [[0,0]] },             // 2x1 (verticale)
+
+      // Pièces précédentes
+      { id: 'chaussettes', src: 'Src/images/chaussettes.png', shape: [[0,0]] },                 // 1x1
+      { id: 'lunettes', src: 'Src/images/Lunettes.png', shape: [[0,0]] },                       // 1x1
+      { id: 'pq', src: 'Src/images/PQ.png', shape: [[0,0],[0,1],[0,2]] },                             // 1x2 (horizontal)
+      { id: 'lampe', src: 'Src/images/Lampe.png', shape: [[0,0],[1,0]] },                       // 2x1 (vertical)
+      { id: 'kit', src: 'Src/images/Kit.png', shape: [[0,0],[0,1],[1,0],[1,1]] },               // 2x2
+      { id: 'chargeur', src: 'Src/images/Chargeur.png', shape: [[0,0],[1,0]] },                 // 2x1 (vertical)
+      { id: 'couteau', src: 'Src/images/Couteau.png', shape: [[0,0]] },                         // 1x1
+      { id: 'couverture', src: 'Src/images/couverture.png', shape: [[0,0],[0,1]] },             // 1x2 (horizontal)
+      { id: 'tomato', src: 'Src/images/Tomato.png', shape: [[0,0]] },                           // 1x1
+      { id: 'scotch', src: 'Src/images/Scotch.png', shape: [[0,0]] },                           // 1x1
+
+      { id: 'mouchoires', src: 'Src/images/Mouchoires.png', shape: [[0,0],[0,1],[0,2]] },             // 1x2
+      { id: 'bougies', src: 'Src/images/Bougies.png', shape: [[0,0]] },                         // 1x1
+      { id: 'cles', src: 'Src/images/Cles.png', shape: [[0,0]] },                               // 1x1
+      { id: 'ours', src: 'Src/images/Ours.png', shape: [[0,0],[0,1],[0,2]] },                   // Forme en L
+      { id: 'ventilateur', src: 'Src/images/Ventilateur.png', shape: [[0,0],[0,1],[1,0],[1,1]] }, // 2x2
+      { id: 'oreiller', src: 'Src/images/Oreiller.png', shape: [[0,0],[0,1],[1,0],[1,1]] },       // 2x2
+      { id: 'briquet', src: 'Src/images/Briquet.png', shape: [[0,0],[0,1]] },                         // 1x1
+      { id: 'cartes', src: 'Src/images/Cartes.png', shape: [[0,0]] },                           // 1x1
+      { id: 'argent', src: 'Src/images/Argent.png', shape: [[0,0]] },                           // 1x1
+      { id: 'radio', src: 'Src/images/Radio.png', shape: [[0,0],[0,1],[0,2]] }                  // 1x3
+    ];
+
+    let gridState = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+    let draggedPiece = null;
+    let selectedPieceForRotation = null;
+
+    // Initialisation de la grille 4x6
+    const gridEl = document.getElementById('grid');
+    for (let r = 0; r < GRID_ROWS; r++) {
+      for (let c = 0; c < GRID_COLS; c++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = r;
+        cell.dataset.col = c;
+        gridEl.appendChild(cell);
+      }
+    }
+
+    // Chargement des pièces dans l'inventaire
+    const inventoryEl = document.getElementById('inventory');
+    piecesData.forEach(pData => {
+      const pieceEl = createPieceElement(pData);
+      inventoryEl.appendChild(pieceEl);
+    });
+
+    // Création de l'élément HTML pour une pièce
+    function createPieceElement(data) {
+      const piece = document.createElement('div');
+      piece.classList.add('piece');
+      piece.draggable = true;
+      piece.dataset.id = data.id;
+      piece.pData = JSON.parse(JSON.stringify(data));
+
+      updatePieceDimensions(piece);
+
+      // Définir l'image de fond
+      piece.style.backgroundImage = `url('${data.src}')`;
+
+      // Event Listeners
+      piece.addEventListener('dragstart', handleDragStart);
+      piece.addEventListener('dragend', handleDragEnd);
+
+      // Rotation au double-clic
+      piece.addEventListener('dblclick', () => {
+        rotatePiece(piece);
+      });
+
+      // Sélection pour la touche R
+      piece.addEventListener('click', () => {
+        selectedPieceForRotation = piece;
+      });
+
+      return piece;
+    }
+
+    // Recalcule les dimensions HTML en fonction du tableau d'occupation shape
+    function updatePieceDimensions(piece) {
+      const shape = piece.pData.shape;
+      let maxR = 0, maxC = 0;
+      shape.forEach(([r, c]) => {
+        if (r > maxR) maxR = r;
+        if (c > maxC) maxC = c;
+      });
+
+      piece.style.width = `${(maxC + 1) * CELL_SIZE}px`;
+      piece.style.height = `${(maxR + 1) * CELL_SIZE}px`;
+    }
+
+    // Pivotement à 90°
+    function rotatePiece(piece) {
+      if (piece.classList.contains('placed')) return;
+      
+      const shape = piece.pData.shape;
+      const newShape = shape.map(([r, c]) => [c, -r]);
+      
+      let minR = Math.min(...newShape.map(([r, c]) => r));
+      let minC = Math.min(...newShape.map(([r, c]) => c));
+      
+      piece.pData.shape = newShape.map(([r, c]) => [r - minR, c - minC]);
+      
+      updatePieceDimensions(piece);
+    }
+
+    // Support touche R
+    window.addEventListener('keydown', (e) => {
+      if ((e.key === 'r' || e.key === 'R') && selectedPieceForRotation) {
+        rotatePiece(selectedPieceForRotation);
+      }
+    });
+
+    // Drag & Drop
+    function handleDragStart(e) {
+      draggedPiece = this;
+      selectedPieceForRotation = this;
+      setTimeout(() => this.style.opacity = '0.4', 0);
+      
+      if (this.classList.contains('placed')) {
+        removeFromGrid(this);
+      }
+    }
+
+    function handleDragEnd(e) {
+      this.style.opacity = '1';
+      clearHighlights();
+    }
+
+    gridEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      clearHighlights();
+      
+      const targetCell = e.target.closest('.cell');
+      if (!targetCell || !draggedPiece) return;
+
+      const row = parseInt(targetCell.dataset.row);
+      const col = parseInt(targetCell.dataset.col);
+
+      const isValid = canPlace(draggedPiece, row, col);
+      highlightPlacement(draggedPiece, row, col, isValid);
+    });
+
+    gridEl.addEventListener('dragleave', clearHighlights);
+
+    gridEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      clearHighlights();
+
+      const targetCell = e.target.closest('.cell');
+      if (!targetCell || !draggedPiece) return;
+
+      const row = parseInt(targetCell.dataset.row);
+      const col = parseInt(targetCell.dataset.col);
+
+      if (canPlace(draggedPiece, row, col)) {
+        placePiece(draggedPiece, row, col);
+      }
+    });
+
+    // Remise dans l'inventaire
+    inventoryEl.addEventListener('dragover', (e) => e.preventDefault());
+    inventoryEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (draggedPiece && draggedPiece.classList.contains('placed')) {
+        inventoryEl.appendChild(draggedPiece);
+        draggedPiece.classList.remove('placed');
+        draggedPiece.style.position = 'relative';
+        draggedPiece.style.top = '0';
+        draggedPiece.style.left = '0';
+      }
+    });
+
+    function canPlace(piece, startRow, startCol) {
+      const shape = piece.pData.shape;
+      for (let [r, c] of shape) {
+        const targetR = startRow + r;
+        const targetC = startCol + c;
+
+        if (targetR < 0 || targetR >= GRID_ROWS || targetC < 0 || targetC >= GRID_COLS) {
+          return false;
+        }
+        if (gridState[targetR][targetC] !== null) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function placePiece(piece, startRow, startCol) {
+      const shape = piece.pData.shape;
+      
+      shape.forEach(([r, c]) => {
+        gridState[startRow + r][startCol + c] = piece.dataset.id;
+      });
+
+      gridEl.appendChild(piece);
+      piece.classList.add('placed');
+      piece.style.position = 'absolute';
+      piece.style.left = `${startCol * CELL_SIZE + 5 + (startCol)*2}px`;
+      piece.style.top = `${startRow * CELL_SIZE + 5 + (startRow)*2}px`;
+    }
+
+    function removeFromGrid(piece) {
+      for (let r = 0; r < GRID_ROWS; r++) {
+        for (let c = 0; c < GRID_COLS; c++) {
+          if (gridState[r][c] === piece.dataset.id) {
+            gridState[r][c] = null;
+          }
+        }
+      }
+    }
+
+    function highlightPlacement(piece, startRow, startCol, isValid) {
+      const shape = piece.pData.shape;
+      shape.forEach(([r, c]) => {
+        const targetR = startRow + r;
+        const targetC = startCol + c;
+
+        if (targetR >= 0 && targetR < GRID_ROWS && targetC >= 0 && targetC < GRID_COLS) {
+          const cell = gridEl.querySelector(`[data-row="${targetR}"][data-col="${targetC}"]`);
+          if (cell) {
+            cell.classList.add(isValid ? 'highlight' : 'invalid');
+          }
+        }
+      });
+    }
+
+    function clearHighlights() {
+      document.querySelectorAll('.cell').forEach(cell => {
+        cell.classList.remove('highlight', 'invalid');
+      });
+    }
+  </script>
+</body>
+</html>
