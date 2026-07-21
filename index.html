@@ -27,6 +27,17 @@ HTML
       color: #bdc3c7;
       text-align: center;
     }
+    .validation_button{
+      margin: 20px;
+      font-size : 14px ;
+      background-color: #27ae60;
+      color :#bdc3c7 ; 
+      text-align: center;
+      border-radius: 3px;
+      border-color: #bdc3c7;
+    }
+
+    
     .game-container {
       display: flex;
       gap: 40px;
@@ -107,6 +118,7 @@ HTML
     Glissez-déposez les objets sur la grille<br>
     <strong>Astuce :</strong> Appuyez sur <kbd>R</kbd> ou <strong>double-cliquez</strong> sur une pièce pour la faire pivoter !
   </div>
+  <button class ="validation_button"  type = "button"  id = validation_button1>Valider</button>
 
   <div class="game-container">
     <div id="grid"></div>
@@ -117,36 +129,40 @@ HTML
     const CELL_SIZE = 80;
     const GRID_COLS = 4;
     const GRID_ROWS = 6;
+    const validation_button = document.getElementById("validation_button1") ; 
+    
+    
+    validation_button.addEventListener("click",test);
 
     // Définition de chaque pièce avec ses dimensions exactes (lignes x colonnes)
     const piecesData = [
       // Les 3 dernières images fournies
-      { id: 'pile', src: 'Src/images/Pile.png', shape: [[0,0]] },                         // 2x1 (verticale)
-      { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]] },             // 2x1 (verticale)
-      { id: 'bouteille2', src: 'Src/images/Bouteille2.png', shape: [[0,0]] },             // 2x1 (verticale)
+      { id: 'pile', src: 'Src/images/Pile.png', shape: [[0,0]], points:1 },                         // 2x1 (verticale)
+      { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]], points:1 },             // 2x1 (verticale)
+      { id: 'bouteille2', src: 'Src/images/Bouteille2.png', shape: [[0,0]], points:1 },             // 2x1 (verticale)
 
       // Pièces précédentes
-      { id: 'chaussettes', src: 'Src/images/chaussettes.png', shape: [[0,0]] },                 // 1x1
-      { id: 'lunettes', src: 'Src/images/Lunettes.png', shape: [[0,0]] },                       // 1x1
-      { id: 'pq', src: 'Src/images/PQ.png', shape: [[0,0],[0,1],[0,2]] },                             // 1x2 (horizontal)
-      { id: 'lampe', src: 'Src/images/Lampe.png', shape: [[0,0],[1,0]] },                       // 2x1 (vertical)
-      { id: 'kit', src: 'Src/images/Kit.png', shape: [[0,0],[0,1],[1,0],[1,1]] },               // 2x2
-      { id: 'chargeur', src: 'Src/images/Chargeur.png', shape: [[0,0],[1,0]] },                 // 2x1 (vertical)
-      { id: 'couteau', src: 'Src/images/Couteau.png', shape: [[0,0]] },                         // 1x1
-      { id: 'couverture', src: 'Src/images/couverture.png', shape: [[0,0],[0,1],[0,2]] },             // 1x2 (horizontal)
-      { id: 'tomato', src: 'Src/images/Tomato.png', shape: [[0,0]] },                           // 1x1
-      { id: 'scotch', src: 'Src/images/Scotch.png', shape: [[0,0]] },                           // 1x1
+      { id: 'chaussettes', src: 'Src/images/chaussettes.png', shape: [[0,0]], points:-1 },                 // 1x1
+      { id: 'lunettes', src: 'Src/images/Lunettes.png', shape: [[0,0]], points:1 },                       // 1x1
+      { id: 'pq', src: 'Src/images/PQ.png', shape: [[0,0],[0,1],[0,2]], points:-2 },                             // 1x2 (horizontal)
+      { id: 'lampe', src: 'Src/images/Lampe.png', shape: [[0,0],[1,0]], points:2 },                       // 2x1 (vertical)
+      { id: 'kit', src: 'Src/images/Kit.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:2 },               // 2x2
+      { id: 'chargeur', src: 'Src/images/Chargeur.png', shape: [[0,0],[1,0]], points:1 },                 // 2x1 (vertical)
+      { id: 'couteau', src: 'Src/images/Couteau.png', shape: [[0,0]], points:1 },                         // 1x1
+      { id: 'couverture', src: 'Src/images/couverture.png', shape: [[0,0],[0,1],[0,2]], points:2 },             // 1x2 (horizontal)
+      { id: 'tomato', src: 'Src/images/Tomato.png', shape: [[0,0]], points:1 },                           // 1x1
+      { id: 'scotch', src: 'Src/images/Scotch.png', shape: [[0,0]], points:1 },                           // 1x1
 
-      { id: 'mouchoires', src: 'Src/images/Mouchoires.png', shape: [[0,0],[0,1],[0,2]] },             // 1x2
-      { id: 'bougies', src: 'Src/images/Bougies.png', shape: [[0,0]] },                         // 1x1
-      { id: 'cles', src: 'Src/images/Cles.png', shape: [[0,0]] },                               // 1x1
-      { id: 'ours', src: 'Src/images/Ours.png', shape: [[0,0],[0,1],[0,2]] },                   // Forme en L
-      { id: 'ventilateur', src: 'Src/images/Ventilateur.png', shape: [[0,0],[0,1],[1,0],[1,1]] }, // 2x2
-      { id: 'oreiller', src: 'Src/images/Oreiller.png', shape: [[0,0],[0,1],[1,0],[1,1]] },       // 2x2
-      { id: 'briquet', src: 'Src/images/Briquet.png', shape: [[0,0],[0,1]] },                         // 1x1
-      { id: 'cartes', src: 'Src/images/Cartes.png', shape: [[0,0]] },                           // 1x1
-      { id: 'argent', src: 'Src/images/Argent.png', shape: [[0,0]] },                           // 1x1
-      { id: 'radio', src: 'Src/images/Radio.png', shape: [[0,0],[0,1],[0,2]] }                  // 1x3
+      { id: 'mouchoires', src: 'Src/images/Mouchoires.png', shape: [[0,0],[0,1],[0,2]], points:-2 },             // 1x2
+      { id: 'bougies', src: 'Src/images/Bougies.png', shape: [[0,0]], points:-1 },                         // 1x1
+      { id: 'cles', src: 'Src/images/Cles.png', shape: [[0,0]], points:1 },                               // 1x1
+      { id: 'ours', src: 'Src/images/Ours.png', shape: [[0,0],[0,1],[0,2]], points:-2 },                   // Forme en L
+      { id: 'ventilateur', src: 'Src/images/Ventilateur.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:-2 }, // 2x2
+      { id: 'oreiller', src: 'Src/images/Oreiller.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:-2 },       // 2x2
+      { id: 'briquet', src: 'Src/images/Briquet.png', shape: [[0,0],[0,1]] , points:-1},                         // 1x1
+      { id: 'cartes', src: 'Src/images/Cartes.png', shape: [[0,0]] , points:1},                           // 1x1
+      { id: 'argent', src: 'Src/images/Argent.png', shape: [[0,0]], points:1 },                           // 1x1
+      { id: 'radio', src: 'Src/images/Radio.png', shape: [[0,0],[0,1],[0,2]], points:2 }                  // 1x3
     ];
 
     let gridState = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
@@ -383,6 +399,10 @@ HTML
       document.querySelectorAll('.cell').forEach(cell => {
         cell.classList.remove('highlight', 'invalid');
       });
+    }
+
+    function test(){
+      alert("TEST") ; 
     }
   </script>
 </body>
