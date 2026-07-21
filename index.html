@@ -3,7 +3,7 @@ HTML
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Jeu d'Inventaire / Puzzle 4x6 Final</title>
+  <title>Jeu Création Kit d'Urgence</title>
   <style>
     * {
       box-sizing: border-box;
@@ -102,9 +102,9 @@ HTML
 </head>
 <body>
 
-  <h1>Puzzle d'Inventaire</h1>
+  <h1>Créé ton kit d'urgence !$$$</h1>
   <div class="instructions">
-    Glissez-déposez les objets sur la grille de 4×6.<br>
+    Glissez-déposez les objets sur la grille<br>
     <strong>Astuce :</strong> Appuyez sur <kbd>R</kbd> ou <strong>double-cliquez</strong> sur une pièce pour la faire pivoter !
   </div>
 
@@ -121,7 +121,7 @@ HTML
     // Définition de chaque pièce avec ses dimensions exactes (lignes x colonnes)
     const piecesData = [
       // Les 3 dernières images fournies
-      { id: 'pile', src: 'PIle.png', shape: [[0,0]] },                         // 2x1 (verticale)
+      { id: 'pile', src: 'Src/images/Pile.png', shape: [[0,0]] },                         // 2x1 (verticale)
       { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]] },             // 2x1 (verticale)
       { id: 'bouteille2', src: 'Src/images/Bouteille2.png', shape: [[0,0]] },             // 2x1 (verticale)
 
@@ -185,22 +185,53 @@ HTML
       // Définir l'image de fond
       piece.style.backgroundImage = `url('${data.src}')`;
 
+      piece.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      selectPiece(piece);
+      });
+
       // Event Listeners
       piece.addEventListener('dragstart', handleDragStart);
       piece.addEventListener('dragend', handleDragEnd);
 
       // Rotation au double-clic
-      piece.addEventListener('dblclick', () => {
+      /*piece.addEventListener('dblclick', () => {
         rotatePiece(piece);
-      });
+      });*/
 
-      // Sélection pour la touche R
+      /*// Sélection pour la touche R
       piece.addEventListener('click', () => {
         selectedPieceForRotation = piece;
-      });
+      });*/
 
       return piece;
     }
+
+    function selectPiece(piece) {
+      // Retire la sélection de toutes les autres pièces
+      document.querySelectorAll('.piece').forEach(p => p.classList.remove('selected'));
+      document.addEventListener('keydown',(e)  => {
+        if (e.key === 'r' || e.key === 82 ){
+          console.log("jzoinubve");
+          rotatePiece(selectedPieceForRotation);
+        }
+      }
+      );
+      selectedPieceForRotation = piece;
+      // Applique le contour à la pièce sélectionnée
+      if (piece) {
+        piece.classList.add('selected');
+      }
+    }   
+
+  // Désélectionne si on clique dans le vide (hors des pièces)
+  document.addEventListener('mousedown', (e) => {
+    if (!e.target.closest('.piece')) {
+      selectPiece(null);
+    }
+  });
+
+
 
     // Recalcule les dimensions HTML en fonction du tableau d'occupation shape
     function updatePieceDimensions(piece) {
@@ -217,6 +248,7 @@ HTML
 
     // Pivotement à 90°
     function rotatePiece(piece) {
+      console.log("ROTAATE");
       if (piece.classList.contains('placed')) return;
       
       const shape = piece.pData.shape;
@@ -231,16 +263,11 @@ HTML
     }
 
     // Support touche R
-    window.addEventListener('keydown', (e) => {
-      if ((e.key === 'r' || e.key === 'R') && selectedPieceForRotation) {
-        rotatePiece(selectedPieceForRotation);
-      }
-    });
 
     // Drag & Drop
     function handleDragStart(e) {
       draggedPiece = this;
-      selectedPieceForRotation = this;
+      selectedPieceForRotation = this; 
       setTimeout(() => this.style.opacity = '0.4', 0);
       
       if (this.classList.contains('placed')) {
