@@ -1,4 +1,3 @@
-HTML
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -27,17 +26,18 @@ HTML
       color: #bdc3c7;
       text-align: center;
     }
-    .validation_button{
+    .validation_button {
       margin: 20px;
-      font-size : 14px ;
+      font-size: 14px;
       background-color: #27ae60;
-      color :#bdc3c7 ; 
+      color: #bdc3c7; 
       text-align: center;
       border-radius: 3px;
       border-color: #bdc3c7;
+      cursor: pointer;
+      padding: 10px 20px;
     }
 
-    
     .game-container {
       display: flex;
       gap: 40px;
@@ -55,7 +55,6 @@ HTML
       background-color: #34495e;
       padding: 5px;
       border: 3px solid #16a085;
-      /*border-radius: 8px;*/
       box-shadow: 0 10px 20px rgba(0,0,0,0.4);
       position: relative;
     }
@@ -63,7 +62,6 @@ HTML
       width: 80px;
       height: 80px;
       background-color: #1a252f;
-      /*border-radius: 4px;*/
     }
     .cell.highlight {
       background-color: #27ae60 !important;
@@ -84,7 +82,7 @@ HTML
       padding: 15px;
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 5px;
       align-content: flex-start;
       box-shadow: 0 10px 20px rgba(0,0,0,0.4);
     }
@@ -94,16 +92,22 @@ HTML
       position: relative;
       cursor: grab;
       user-select: none;
-      transition: transform 0.1s ease;
-      background-size: contain;
+      transition: left 0.1s ease, top 0.1s ease;
+      background-size: 100% 100%; /* L'image remplit 100% de la surface du div */
       background-repeat: no-repeat;
       background-position: center;
-      background-origin: content-box;
     }
+
+    /* Contour de sélection */
+    .piece.selected {
+      outline: 2px dashed #f1c40f;
+      outline-offset: -2px;
+    }
+
     .piece:active {
       cursor: grabbing;
     }
-    
+
     /* Pièce placée sur le plateau */
     .piece.placed {
       position: absolute;
@@ -116,9 +120,9 @@ HTML
   <h1>Créé ton kit d'urgence !</h1>
   <div class="instructions">
     Glissez-déposez les objets sur la grille<br>
-    <strong>Astuce :</strong> Appuyez sur <kbd>R</kbd> ou <strong>double-cliquez</strong> sur une pièce pour la faire pivoter !
+    <strong>Astuce :</strong> Appuyez sur la touche <kbd>R</kbd> pour faire pivoter la pièce sélectionnée !
   </div>
-  <button class ="validation_button"  type = "button"  id = validation_button1>Valider</button>
+  <button class="validation_button" type="button" id="validation_button1">Valider</button>
 
   <div class="game-container">
     <div id="grid"></div>
@@ -129,40 +133,35 @@ HTML
     const CELL_SIZE = 80;
     const GRID_COLS = 4;
     const GRID_ROWS = 6;
-    const validation_button = document.getElementById("validation_button1") ; 
+    const validation_button = document.getElementById("validation_button1"); 
     
-    
-    validation_button.addEventListener("click",test);
+    validation_button.addEventListener("click", test);
 
     // Définition de chaque pièce avec ses dimensions exactes (lignes x colonnes)
     const piecesData = [
-      // Les 3 dernières images fournies
-      { id: 'pile', src: 'Src/images/Pile.png', shape: [[0,0]], points:1 },                         // 2x1 (verticale)
-      { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]], points:1 },             // 2x1 (verticale)
-      { id: 'bouteille2', src: 'Src/images/Bouteille2.png', shape: [[0,0]], points:1 },             // 2x1 (verticale)
-
-      // Pièces précédentes
-      { id: 'chaussettes', src: 'Src/images/chaussettes.png', shape: [[0,0]], points:-1 },                 // 1x1
-      { id: 'lunettes', src: 'Src/images/Lunettes.png', shape: [[0,0]], points:1 },                       // 1x1
-      { id: 'pq', src: 'Src/images/PQ.png', shape: [[0,0],[0,1],[0,2]], points:-2 },                             // 1x2 (horizontal)
-      { id: 'lampe', src: 'Src/images/Lampe.png', shape: [[0,0],[1,0]], points:2 },                       // 2x1 (vertical)
-      { id: 'kit', src: 'Src/images/Kit.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:2 },               // 2x2
-      { id: 'chargeur', src: 'Src/images/Chargeur.png', shape: [[0,0],[1,0]], points:1 },                 // 2x1 (vertical)
-      { id: 'couteau', src: 'Src/images/Couteau.png', shape: [[0,0]], points:1 },                         // 1x1
-      { id: 'couverture', src: 'Src/images/couverture.png', shape: [[0,0],[0,1],[0,2]], points:2 },             // 1x2 (horizontal)
-      { id: 'tomato', src: 'Src/images/Tomato.png', shape: [[0,0]], points:1 },                           // 1x1
-      { id: 'scotch', src: 'Src/images/Scotch.png', shape: [[0,0]], points:1 },                           // 1x1
-
-      { id: 'mouchoires', src: 'Src/images/Mouchoires.png', shape: [[0,0],[0,1],[0,2]], points:-2 },             // 1x2
-      { id: 'bougies', src: 'Src/images/Bougies.png', shape: [[0,0]], points:-1 },                         // 1x1
-      { id: 'cles', src: 'Src/images/Cles.png', shape: [[0,0]], points:1 },                               // 1x1
-      { id: 'ours', src: 'Src/images/Ours.png', shape: [[0,0],[0,1],[0,2]], points:-2 },                   // Forme en L
-      { id: 'ventilateur', src: 'Src/images/Ventilateur.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:-2 }, // 2x2
-      { id: 'oreiller', src: 'Src/images/Oreiller.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:-2 },       // 2x2
-      { id: 'briquet', src: 'Src/images/Briquet.png', shape: [[0,0],[0,1]] , points:-1},                         // 1x1
-      { id: 'cartes', src: 'Src/images/Cartes.png', shape: [[0,0]] , points:1},                           // 1x1
-      { id: 'argent', src: 'Src/images/Argent.png', shape: [[0,0]], points:1 },                           // 1x1
-      { id: 'radio', src: 'Src/images/Radio.png', shape: [[0,0],[0,1],[0,2]], points:2 }                  // 1x3
+      { id: 'pile', src: 'Src/images/Pile.png', shape: [[0,0]], points:1 }, 
+      { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]], points:1 }, 
+      { id: 'bouteille2', src: 'Src/images/Bouteille2.png', shape: [[0,0]], points:1 }, 
+      { id: 'chaussettes', src: 'Src/images/chaussettes.png', shape: [[0,0]], points:-1 }, 
+      { id: 'lunettes', src: 'Src/images/Lunettes.png', shape: [[0,0]], points:1 }, 
+      { id: 'pq', src: 'Src/images/PQ.png', shape: [[0,0],[0,1],[0,2]], points:-2 }, 
+      { id: 'lampe', src: 'Src/images/Lampe.png', shape: [[0,0],[1,0]], points:2 }, 
+      { id: 'kit', src: 'Src/images/Kit.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:2 }, 
+      { id: 'chargeur', src: 'Src/images/Chargeur.png', shape: [[0,0],[1,0]], points:1 }, 
+      { id: 'couteau', src: 'Src/images/Couteau.png', shape: [[0,0]], points:1 }, 
+      { id: 'couverture', src: 'Src/images/couverture.png', shape: [[0,0],[0,1],[0,2]], points:2 }, 
+      { id: 'tomato', src: 'Src/images/Tomato.png', shape: [[0,0]], points:1 }, 
+      { id: 'scotch', src: 'Src/images/Scotch.png', shape: [[0,0]], points:1 }, 
+      { id: 'mouchoires', src: 'Src/images/Mouchoires.png', shape: [[0,0],[0,1],[0,2]], points:-2 }, 
+      { id: 'bougies', src: 'Src/images/Bougies.png', shape: [[0,0]], points:-1 }, 
+      { id: 'cles', src: 'Src/images/Cles.png', shape: [[0,0]], points:1 }, 
+      { id: 'ours', src: 'Src/images/Ours.png', shape: [[0,0],[0,1],[0,2]], points:-2 }, 
+      { id: 'ventilateur', src: 'Src/images/Ventilateur.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:-2 }, 
+      { id: 'oreiller', src: 'Src/images/Oreiller.png', shape: [[0,0],[0,1],[1,0],[1,1]], points:-2 }, 
+      { id: 'briquet', src: 'Src/images/Briquet.png', shape: [[0,0],[0,1]], points:-1}, 
+      { id: 'cartes', src: 'Src/images/Cartes.png', shape: [[0,0]], points:1}, 
+      { id: 'argent', src: 'Src/images/Argent.png', shape: [[0,0]], points:1 }, 
+      { id: 'radio', src: 'Src/images/Radio.png', shape: [[0,0],[0,1],[0,2]], points:2 } 
     ];
 
     let gridState = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
@@ -196,60 +195,57 @@ HTML
       piece.dataset.id = data.id;
       piece.pData = JSON.parse(JSON.stringify(data));
 
+      // On précharge l'image d'origine dans un objet JS
+      const img = new Image();
+      img.src = data.src;
+      piece.loadedImage = img;
+
       updatePieceDimensions(piece);
 
-      // Définir l'image de fond
-      piece.style.backgroundImage = `url('${data.src}')`;
+      // On assigne l'image initiale une fois chargée
+      img.onload = () => {
+        piece.style.backgroundImage = `url('${data.src}')`;
+      };
 
       piece.addEventListener('mousedown', (e) => {
-      e.stopPropagation();
-      selectPiece(piece);
+        e.stopPropagation();
+        selectPiece(piece);
       });
 
-      // Event Listeners
       piece.addEventListener('dragstart', handleDragStart);
       piece.addEventListener('dragend', handleDragEnd);
-
-      // Rotation au double-clic
-      /*piece.addEventListener('dblclick', () => {
-        rotatePiece(piece);
-      });*/
-
-      /*// Sélection pour la touche R
-      piece.addEventListener('click', () => {
-        selectedPieceForRotation = piece;
-      });*/
 
       return piece;
     }
 
     function selectPiece(piece) {
-      // Retire la sélection de toutes les autres pièces
       document.querySelectorAll('.piece').forEach(p => p.classList.remove('selected'));
-      document.addEventListener('keydown',(e)  => {
-        if (e.key === 'r' || e.key === 82 ){
-          console.log("jzoinubve");
-          rotatePiece(selectedPieceForRotation);
-        }
-      }
-      );
       selectedPieceForRotation = piece;
-      // Applique le contour à la pièce sélectionnée
       if (piece) {
         piece.classList.add('selected');
       }
     }   
 
-  // Désélectionne si on clique dans le vide (hors des pièces)
-  document.addEventListener('mousedown', (e) => {
-    if (!e.target.closest('.piece')) {
-      selectPiece(null);
-    }
-  });
+    // Gestion unique de la touche R
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'r' || e.key === 'R') && selectedPieceForRotation) {
+        rotatePiece(selectedPieceForRotation);
+      }
+    });
 
+    document.addEventListener('dblclick',(e) => {
+        if (selectedPieceForRotation){
+          rotatePiece(selectedPieceForRotation);
+        }
+    });
 
+    // Désélection hors des pièces
+    document.addEventListener('mousedown', (e) => {
+      if (!e.target.closest('.piece')) {
+        selectPiece(null);
+      }
+    });
 
-    // Recalcule les dimensions HTML en fonction du tableau d'occupation shape
     function updatePieceDimensions(piece) {
       const shape = piece.pData.shape;
       let maxR = 0, maxC = 0;
@@ -262,28 +258,54 @@ HTML
       piece.style.height = `${(maxR + 1) * CELL_SIZE}px`;
     }
 
-    // Pivotement à 90°
+    // Fonction qui pivote l'image de 90° dans un Canvas HTML5
+    function getRotatedImageBase64(imgElement) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // On inverse largeur et hauteur du canvas pour la rotation
+      canvas.width = imgElement.height || imgElement.naturalHeight;
+      canvas.height = imgElement.width || imgElement.naturalWidth;
+
+      // Rotation de 90°
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((90 * Math.PI) / 180);
+      ctx.drawImage(imgElement, -imgElement.width / 2, -imgElement.height / 2);
+
+      return canvas.toDataURL();
+    }
+
     function rotatePiece(piece) {
-      console.log("ROTAATE");
       if (piece.classList.contains('placed')) return;
-      
+
+      // 1. Pivotement de la grille matricielle (JS)
       const shape = piece.pData.shape;
       const newShape = shape.map(([r, c]) => [c, -r]);
-      
       let minR = Math.min(...newShape.map(([r, c]) => r));
       let minC = Math.min(...newShape.map(([r, c]) => c));
       
       piece.pData.shape = newShape.map(([r, c]) => [r - minR, c - minC]);
       
+      // 2. Redimensionnement du div HTML (3 cases de haut au lieu de 3 de large)
       updatePieceDimensions(piece);
+      
+      // 3. Rotation réelle de l'image de 90° dans un Canvas
+      if (piece.loadedImage && piece.loadedImage.complete) {
+        const rotatedSrc = getRotatedImageBase64(piece.loadedImage);
+        
+        // On met à jour le background et on garde en mémoire l'image tournée
+        piece.style.backgroundImage = `url('${rotatedSrc}')`;
+        
+        const nextImg = new Image();
+        nextImg.src = rotatedSrc;
+        piece.loadedImage = nextImg;
+      }
     }
-
-    // Support touche R
 
     // Drag & Drop
     function handleDragStart(e) {
       draggedPiece = this;
-      selectedPieceForRotation = this; 
+      selectPiece(this); 
       setTimeout(() => this.style.opacity = '0.4', 0);
       
       if (this.classList.contains('placed')) {
@@ -327,7 +349,6 @@ HTML
       }
     });
 
-    // Remise dans l'inventaire
     inventoryEl.addEventListener('dragover', (e) => e.preventDefault());
     inventoryEl.addEventListener('drop', (e) => {
       e.preventDefault();
@@ -402,7 +423,7 @@ HTML
     }
 
     function test(){
-      alert("TEST") ; 
+      alert("TEST"); 
     }
   </script>
 </body>
