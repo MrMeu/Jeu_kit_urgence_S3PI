@@ -30,12 +30,17 @@
       margin: 20px;
       font-size: 14px;
       background-color: #27ae60;
-      color: #bdc3c7; 
+      color: #ffffff; 
       text-align: center;
-      border-radius: 3px;
-      border-color: #bdc3c7;
+      border-radius: 5px;
+      border: none;
       cursor: pointer;
-      padding: 10px 20px;
+      padding: 10px 25px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    .validation_button:hover {
+      background-color: #219150;
     }
 
     .game-container {
@@ -94,7 +99,7 @@
       cursor: grab;
       user-select: none;
       transition: left 0.1s ease, top 0.1s ease;
-      background-size: 100% 100%; /* L'image remplit 100% de la surface du div */
+      background-size: 100% 100%;
       background-repeat: no-repeat;
       background-position: center;
     }
@@ -114,6 +119,71 @@
       position: absolute;
       z-index: 10;
     }
+
+    /* MODALE DE REVEAL DU SCORE */
+    .modal {
+      display: none; /* Caché par défaut */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #34495e;
+      border: 3px solid #f1c40f;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      max-width: 400px;
+      width: 90%;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .score-display {
+      font-size: 20px;
+      margin: 20px 0 10px 0;
+    }
+
+    #final-score {
+      font-weight: bold;
+      color: #f1c40f;
+      font-size: 36px;
+    }
+
+    #score-comment {
+      font-style: italic;
+      color: #bdc3c7;
+      margin-bottom: 25px;
+    }
+
+    .modal_button{
+       background-color: #e67e22;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin : 10px ; 
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .modal_button:hover{
+      background-color: #d35400;
+    }
   </style>
 </head>
 <body>
@@ -130,15 +200,32 @@
     <div id="inventory"></div>
   </div>
 
+  <!-- POP-UP DE REVEAL DU SCORE -->
+  <div id="score-modal" class="modal">
+    <div class="modal-content">
+      <h2>Résultat de ton Kit ! 🎒</h2>
+      <p class="score-display">Tu as obtenu : <br><span id="final-score">0</span> points</p>
+      <p id="score-comment"></p>
+      <button id="close-modal-btn" class = "modal_button">Rejouer / Modifier</button>
+      <button id="answer-reveal-button" class = "modal_button">Afficher la solution</button>
+    </div>
+  </div>
+
+  <div id = "solution-modal" class="modal">
+    <div class = "modal-content">
+      <img src = "Src/images/Solution.png" style = "width: 100%; max-width: 400px; height: auto;">
+      <button id="close-modal-btn2" class = "modal_button">Fermer</button>
+    </div>
+  </div>
+
   <script>
     const CELL_SIZE = 80;
     const GRID_COLS = 4;
     const GRID_ROWS = 6;
     const validation_button = document.getElementById("validation_button1"); 
     
-    validation_button.addEventListener("click", test);
+    validation_button.addEventListener("click", reveal_score);
 
-    // Définition de chaque pièce avec ses dimensions exactes (lignes x colonnes)
     const piecesData = [
       { id: 'pile', src: 'Src/images/Pile.png', shape: [[0,0]], points:1 }, 
       { id: 'bouteille1', src: 'Src/images/Bouteille1.png', shape: [[0,0]], points:1 }, 
@@ -169,7 +256,7 @@
     let draggedPiece = null;
     let selectedPieceForRotation = null;
 
-    // Initialisation de la grille 4x6
+    // Initialisation grille
     const gridEl = document.getElementById('grid');
     for (let r = 0; r < GRID_ROWS; r++) {
       for (let c = 0; c < GRID_COLS; c++) {
@@ -181,29 +268,26 @@
       }
     }
 
-    // Chargement des pièces dans l'inventaire
+    // Chargement inventaire
     const inventoryEl = document.getElementById('inventory');
     piecesData.forEach(pData => {
       const pieceEl = createPieceElement(pData);
       inventoryEl.appendChild(pieceEl);
     });
 
-    // Création de l'élément HTML pour une pièce
     function createPieceElement(data) {
       const piece = document.createElement('div');
       piece.classList.add('piece');
       piece.draggable = true;
       piece.dataset.id = data.id;
       piece.pData = JSON.parse(JSON.stringify(data));
-      piece.points = data.points ; 
-      // On précharge l'image d'origine dans un objet JS
+
       const img = new Image();
       img.src = data.src;
       piece.loadedImage = img;
 
       updatePieceDimensions(piece);
 
-      // On assigne l'image initiale une fois chargée
       img.onload = () => {
         piece.style.backgroundImage = `url('${data.src}')`;
       };
@@ -227,20 +311,12 @@
       }
     }   
 
-    // Gestion unique de la touche R
     document.addEventListener('keydown', (e) => {
       if ((e.key === 'r' || e.key === 'R') && selectedPieceForRotation) {
         rotatePiece(selectedPieceForRotation);
       }
     });
 
-    document.addEventListener('dblclick',(e) => {
-        if (selectedPieceForRotation){
-          rotatePiece(selectedPieceForRotation);
-        }
-    });
-
-    // Désélection hors des pièces
     document.addEventListener('mousedown', (e) => {
       if (!e.target.closest('.piece')) {
         selectPiece(null);
@@ -259,16 +335,13 @@
       piece.style.height = `${(maxR + 1) * CELL_SIZE}px`;
     }
 
-    // Fonction qui pivote l'image de 90° dans un Canvas HTML5
     function getRotatedImageBase64(imgElement) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
-      // On inverse largeur et hauteur du canvas pour la rotation
       canvas.width = imgElement.height || imgElement.naturalHeight;
       canvas.height = imgElement.width || imgElement.naturalWidth;
 
-      // Rotation de 90°
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((90 * Math.PI) / 180);
       ctx.drawImage(imgElement, -imgElement.width / 2, -imgElement.height / 2);
@@ -279,7 +352,6 @@
     function rotatePiece(piece) {
       if (piece.classList.contains('placed')) return;
 
-      // 1. Pivotement de la grille matricielle (JS)
       const shape = piece.pData.shape;
       const newShape = shape.map(([r, c]) => [c, -r]);
       let minR = Math.min(...newShape.map(([r, c]) => r));
@@ -287,14 +359,10 @@
       
       piece.pData.shape = newShape.map(([r, c]) => [r - minR, c - minC]);
       
-      // 2. Redimensionnement du div HTML (3 cases de haut au lieu de 3 de large)
       updatePieceDimensions(piece);
       
-      // 3. Rotation réelle de l'image de 90° dans un Canvas
       if (piece.loadedImage && piece.loadedImage.complete) {
         const rotatedSrc = getRotatedImageBase64(piece.loadedImage);
-        
-        // On met à jour le background et on garde en mémoire l'image tournée
         piece.style.backgroundImage = `url('${rotatedSrc}')`;
         
         const nextImg = new Image();
@@ -423,13 +491,41 @@
       });
     }
 
-    function test(){
-      let total_points = 0
+    // FONCTION DE CALCUL ET REVEAL DU SCORE
+    function reveal_score() {
+      let total_points = 0;
+      
       document.querySelectorAll('.piece.placed').forEach(piece => {
-        total_points += piece.pData.points ; 
+        total_points += piece.pData.points;
       });
-      alert('Vous avez eu : '+total_points+' points !'); 
+
+      document.getElementById('final-score').textContent = total_points;
+
+      const commentEl = document.getElementById('score-comment');
+      if (total_points === 19) {
+        commentEl.textContent = "Bravo ! Tu as obtenu le nombre maximum de points";
+      } else if (total_points >= 18 && total_points < 0 ) {
+        commentEl.textContent = "Pas mal ! Mais tu peux encore l'améliorer.";
+      } else {
+        commentEl.textContent = "Oups... Tu as pris trop d'objets inutiles !";
+      }
+
+      const modal = document.getElementById('score-modal');
+      modal.style.display = 'flex';
     }
+
+    // Fermeture de la pop-up
+    document.getElementById('close-modal-btn').addEventListener('click', () => {
+      document.getElementById('score-modal').style.display = 'none';
+      
+    });
+    document.getElementById('answer-reveal-button').addEventListener('click', () => {
+      document.getElementById('solution-modal').style.display = 'flex' ; 
+    });
+
+    document.getElementById('close-modal-btn2').addEventListener('click',() => {
+      document.getElementById('solution-modal').style.display = 'none' ; 
+    });
   </script>
 </body>
 </html>
