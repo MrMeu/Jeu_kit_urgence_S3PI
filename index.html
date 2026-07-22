@@ -55,6 +55,7 @@
       background-color: #34495e;
       padding: 5px;
       border: 3px solid #16a085;
+      border-radius: 8px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.4);
       position: relative;
     }
@@ -194,7 +195,7 @@
       piece.draggable = true;
       piece.dataset.id = data.id;
       piece.pData = JSON.parse(JSON.stringify(data));
-
+      piece.points = data.points ; 
       // On précharge l'image d'origine dans un objet JS
       const img = new Image();
       img.src = data.src;
@@ -423,7 +424,11 @@
     }
 
     function test(){
-      alert("TEST"); 
+      let total_points = 0
+      document.querySelectorAll('.piece.placed').forEach(piece => {
+        total_points += piece.pData.points ; 
+      });
+      alert('Vous avez eu : '+total_points+' points !'); 
     }
   </script>
 </body>
