@@ -6,30 +6,35 @@
   <style>
     * {
       box-sizing: border-box;
+      margin:0;
+      padding: 0;
     }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #2c3e50;
-      color: #ecf0f1;
+      background-color: white;
+      color: #962661;
       display: flex;
       flex-direction: column;
       align-items: center;
       margin: 0;
-      padding: 20px;
+      padding:0;
     }
     h1 {
       margin-bottom: 10px;
     }
     .instructions {
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: #bdc3c7;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      font-size: 16px;
+      color: #333333;
       text-align: center;
+      width: 100%;
+      background-color: #bdc3c7;
     }
     .validation_button {
-      margin: 20px;
+      margin: 10px;
       font-size: 14px;
-      background-color: #27ae60;
+      background-color: #962661;
       color: #ffffff; 
       text-align: center;
       border-radius: 5px;
@@ -57,9 +62,9 @@
       grid-template-columns: repeat(4, 80px);
       grid-template-rows: repeat(6, 80px);
       gap: 2px;
-      background-color: #34495e;
+      background-color: #333333;
       padding: 5px;
-      border: 3px solid #16a085;
+      border: 3px solid #bdc3c7;
       border-radius: 8px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.4);
       position: relative;
@@ -67,7 +72,7 @@
     .cell {
       width: 80px;
       height: 80px;
-      background-color: #1a252f;
+      background-color: #F8577F;
     }
     .cell.highlight {
       background-color: #27ae60 !important;
@@ -82,8 +87,8 @@
     #inventory {
       width: 500px;
       min-height: 500px;
-      background-color: #34495e;
-      border: 3px solid #2980b9;
+      background-color: #F8577F;
+      border: 3px solid #333333;
       border-radius: 8px;
       padding: 15px;
       display: flex;
@@ -136,8 +141,8 @@
     }
 
     .modal-content {
-      background-color: #34495e;
-      border: 3px solid #f1c40f;
+      background-color: white;
+      border: 3px solid #333333;
       border-radius: 12px;
       padding: 30px;
       text-align: center;
@@ -159,18 +164,18 @@
 
     #final-score {
       font-weight: bold;
-      color: #f1c40f;
+      color: #962661;
       font-size: 36px;
     }
 
     #score-comment {
       font-style: italic;
-      color: #bdc3c7;
+      color: #333333;
       margin-bottom: 25px;
     }
 
     .modal_button{
-       background-color: #e67e22;
+      background-color: #962661;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -184,11 +189,43 @@
     .modal_button:hover{
       background-color: #d35400;
     }
+
+    .header {
+      width : 100% ; 
+      display: flex;
+      position: relative;
+      padding: 12px 16px 12px 21px;
+      align-items: center;
+      background-color: #333333;
+    }
+
+    .logo{
+      margin: 10px;
+      display: flex;
+      
+    }
+
+    .header-title{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%); /* Décale exactement au centre parfait de la page */
+      color: #9b2c67; /* La couleur rose/violette de ton titre */
+      font-size: 24px;
+      margin: 0;
+      text-align: center;
+      white-space: nowrap;
+    }
+    
+    
   </style>
 </head>
+<header id = 'header' class = header>
+  <div class = logo>
+      <img  src = 'Src/images/logo.png' style = "width: 100%; max-width:70px ; height: auto;">
+  </div>
+  <div id= 'header-title' class = header-title><h1>   Créé ton kit d'urgence !</h1></div>
+</header>
 <body>
-
-  <h1>Créé ton kit d'urgence !</h1>
   <div class="instructions">
     Glissez-déposez les objets sur la grille<br>
     <strong>Astuce :</strong> Appuyez sur la touche <kbd>R</kbd> pour faire pivoter la pièce sélectionnée !
@@ -203,7 +240,7 @@
   <!-- POP-UP DE REVEAL DU SCORE -->
   <div id="score-modal" class="modal">
     <div class="modal-content">
-      <h2>Résultat de ton Kit ! 🎒</h2>
+      <h2>Résultat de ton Kit !</h2>
       <p class="score-display">Tu as obtenu : <br><span id="final-score">0</span> points</p>
       <p id="score-comment"></p>
       <button id="close-modal-btn" class = "modal_button">Rejouer / Modifier</button>
@@ -317,6 +354,12 @@
       }
     });
 
+    document.addEventListener('click',(e) => {
+      if (selectedPieceForRotation){
+        rotatePiece(selectedPieceForRotation);
+      }
+    });
+
     document.addEventListener('mousedown', (e) => {
       if (!e.target.closest('.piece')) {
         selectPiece(null);
@@ -331,8 +374,8 @@
         if (c > maxC) maxC = c;
       });
 
-      piece.style.width = `${(maxC + 1) * CELL_SIZE}px`;
-      piece.style.height = `${(maxR + 1) * CELL_SIZE}px`;
+      piece.style.width = `${(maxC + 1) * CELL_SIZE + (maxC+1)*2}px`;
+      piece.style.height = `${(maxR + 1) * CELL_SIZE + (maxR+1)*2}px`;
     }
 
     function getRotatedImageBase64(imgElement) {
