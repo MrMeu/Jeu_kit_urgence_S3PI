@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.0/DragDropTouch.js"></script>
   <title>Jeu Création Kit d'Urgence</title>
   <style>
@@ -217,6 +218,29 @@
       text-align: center;
       white-space: nowrap;
     }
+
+    @media (max-width: 768px) {
+  
+  /* On empile le plateau et l'inventaire verticalement */
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* On réduit la taille de l'inventaire pour qu'il rentre sur l'écran */
+  #inventory {
+    width: 95vw; /* 95% de la largeur de l'écran */
+    min-height: auto;
+  }
+
+  /* On peut réduire la taille des cases de la grille pour les petits écrans */
+  /* Note : Si tu réduis CELL_SIZE en CSS, pense à adapter CELL_SIZE dans le JS ! */
+  
+  .header-title h1 {
+    font-size: 18px; /* Titre plus petit */
+  }
+}
     
     
   </style>
