@@ -145,6 +145,7 @@
     }
 
     .modal-content {
+      position: relative ; 
       background-color: white;
       border: 3px solid #333333;
       border-radius: 12px;
@@ -220,6 +221,25 @@
       white-space: nowrap;
     }
 
+    .close-cross {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333333;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+    }
+
+    /* Effet au survol */
+    .close-cross:hover {
+    color: #962661; /* Reprend la couleur rose/violette de ton thème */
+    transform: scale(1.2);
+    }
+
+
   @media (max-width: 1080px) {
   
   /* On empile le plateau et l'inventaire verticalement */
@@ -281,6 +301,7 @@
   <!-- POP-UP DE REVEAL DU SCORE -->
   <div id="score-modal" class="modal">
     <div class="modal-content">
+      <span class ="close-cross" id = "close-cross-score">&times;</span>
       <h2>Résultat de ton Kit !</h2>
       <p class="score-display">Tu as obtenu : <br><span id="final-score">0</span> points</p>
       <p id="score-comment"></p>
@@ -602,6 +623,12 @@
       document.getElementById('score-modal').style.display = 'none';
       
     });
+
+    document.getElementById('close-cross-score').addEventListener('click', () => {
+      document.getElementById('score-modal').style.display = 'none';
+      
+    });
+
     document.getElementById('answer-reveal-button').addEventListener('click', () => {
       document.getElementById('solution-modal').style.display = 'flex' ; 
     });
@@ -610,7 +637,7 @@
       document.getElementById('solution-modal').style.display = 'none' ; 
     });
 
-    let autoScrollInterval = null;
+  let autoScrollInterval = null;
 
   document.addEventListener('dragover', (e) => {
     const threshold = 80; // Distance en px du bord de l'écran pour déclencher le scroll
