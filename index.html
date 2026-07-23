@@ -609,6 +609,34 @@
     document.getElementById('close-modal-btn2').addEventListener('click',() => {
       document.getElementById('solution-modal').style.display = 'none' ; 
     });
+
+    let autoScrollInterval = null;
+
+  document.addEventListener('dragover', (e) => {
+    const threshold = 80; // Distance en px du bord de l'écran pour déclencher le scroll
+    const speed = 15;     // Vitesse du défilement
+    const clientY = e.clientY;
+    const windowHeight = window.innerHeight;
+
+    // On nettoie l'intervalle précédent
+    clearInterval(autoScrollInterval);
+
+    if (clientY < threshold) {
+      // Proche du haut -> scroll vers le haut
+      autoScrollInterval = setInterval(() => {
+        window.scrollBy(0, -speed);
+      }, 16);
+    } else if (clientY > windowHeight - threshold) {
+      // Proche du bas -> scroll vers le bas
+      autoScrollInterval = setInterval(() => {
+        window.scrollBy(0, speed);
+      }, 16);
+    }
+  });
+
+// Arrêter le scroll automatique quand on lâche ou annule le drag
+document.addEventListener('dragend', () => clearInterval(autoScrollInterval));
+document.addEventListener('drop', () => clearInterval(autoScrollInterval));
   </script>
 </body>
 </html>
