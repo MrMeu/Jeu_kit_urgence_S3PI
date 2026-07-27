@@ -253,7 +253,7 @@
   
       /* Ajoute ces lignes pour Flexbox */
       flex-grow: 1; /* Le titre prend tout l'espace central disponible */
-}
+    }
     
 
     .close-cross {
@@ -281,49 +281,56 @@
       
       
     }
+    .bonne-réponse {
+      color : green ; 
+    }
 
-  @media (max-width: 1080px) {
+    .mauvaise-réponse {
+      color : red ; 
+    }
+
+    @media (max-width: 1080px) {
   
-  /* On empile le plateau et l'inventaire verticalement */
-  .game-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
+    /* On empile le plateau et l'inventaire verticalement */
+    .game-container {
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
 
-  /* On réduit la taille de l'inventaire pour qu'il rentre sur l'écran */
-  #inventory {
-    width: 95vw; /* 95% de la largeur de l'écran */
-    min-height: auto;
-  }
+    /* On réduit la taille de l'inventaire pour qu'il rentre sur l'écran */
+    #inventory {
+      width: 95vw; /* 95% de la largeur de l'écran */
+      min-height: auto;
+    }
 
-  /* On peut réduire la taille des cases de la grille pour les petits écrans */
-  /* Note : Si tu réduis CELL_SIZE en CSS, pense à adapter CELL_SIZE dans le JS ! */
+    /* On peut réduire la taille des cases de la grille pour les petits écrans */
+    /* Note : Si tu réduis CELL_SIZE en CSS, pense à adapter CELL_SIZE dans le JS ! */
   
-  .header-title h1 {
-    font-size: 18px; /* Titre plus petit */
-    text-align: center;
-  }
+    .header-title h1 {
+      font-size: 18px; /* Titre plus petit */
+      text-align: center;
+    }
 
-  .instructions{
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 13px;
-  }
+    .instructions{
+      padding-left: 10px;
+      padding-right: 10px;
+      font-size: 13px;
+    }
 
-  .logo{
-    margin: 3px;
-  }
+    .logo{
+      margin: 3px;
+    }
 
-  .header {
-    padding: 5px 5px 5px 5px ; 
-  }
+    .header {
+      padding: 5px 5px 5px 5px ; 
+    }
 
-  .solution-container {
-    flex-direction: column;
-    text-align: center;
-  }
-}
+    .solution-container {
+      flex-direction: column;
+      text-align: center;
+    }
+    }
     
     
   </style>
@@ -337,7 +344,7 @@
 <body>
   <div class="instructions">
     Glissez-déposez les objets sur la grille<br>
-    <strong>Astuce :</strong> Appuyez/Cliquez pour faire pivoter la pièce sélectionnée !
+    <strong>Astuce :</strong> Appuyez/Cliquer pour faire pivoter la pièce sélectionnée !
   </div>
   <button class="validation_button" type="button" id="validation_button1">Valider</button>
 
@@ -367,20 +374,28 @@
       <img src = "Src/Images/Solution.png" style = "width: 100%; max-width: 400px; height: auto;">
       </div>
       <div>
-        <p class = "texte-explicatif"><strong>Lunette :</strong> Pratique pour ne pas les chercher en cas d'alerte <br>
-           <strong>Pile :</strong> Indispensable pour recharger lampe torches et radios<br>
-           <strong>bouteille d'eau :</strong> Nécessaire pour tenir le plus longtemps possible sans sortir<br>
-           <strong>kit de soin :</strong> Utile en cas de petites blessures <br>
-           <strong>lampe torche :</strong> Indispensable en cas de coupure d'électricité<br>
-           <strong>chargeur :</strong> Utile pour recharger votre téléphone en cas de besoins<br>
-           <strong>couteau suisse :</strong> Pratique pour effectuer tout type de petites tâches nécessaires en cas d'alerte<br>
-           <strong>couverture :</strong> Indispensable en hiver si le chauffage est coupé<br>
-           <strong>conserve :</strong> Nécessaire pour tenir le plus longtemps possible sans sortir <br>
-           <strong>argent :</strong> En cas d'évacuation il est pratique d'avoir un peu d'argent de côté<br>
-           <strong>jeu de carte :</strong> Utile pour s'occuper si l'alerte dure longtemps <br>
-           <strong>scotch :</strong> Indispensable pour calfeutrer fenêtres et portes<br>
-           <strong>radio :</strong> Indispensable pour s'informr sur l'évolution de la situation<br>
-           <strong>clés :</strong> Pratique pour ne pas les chercher en cas d'alerte<br>
+        <p class = "texte-explicatif"><strong class ="bonne-réponse">Lunettes :</strong> Pratique pour ne pas les chercher en cas d'alerte <br>
+           <strong class ="bonne-réponse">Pile :</strong> Indispensable pour recharger lampe torches et radios<br>
+           <strong class ="bonne-réponse"></strong> Bouteille d'eau :</strong> Nécessaire pour tenir le plus longtemps possible sans sortir<br>
+           <strong class ="bonne-réponse">Kit de soin :</strong> Utile en cas de petites blessures <br>
+           <strong class ="bonne-réponse">Lampe torche :</strong> Indispensable en cas de coupure d'électricité<br>
+           <strong class ="bonne-réponse">Chargeur :</strong> Utile pour recharger votre téléphone en cas de besoins<br>
+           <strong class ="bonne-réponse">Couteau suisse :</strong> Pratique pour effectuer tout type de petites tâches nécessaires en cas d'alerte<br>
+           <strong class ="bonne-réponse">Couverture :</strong> Indispensable en hiver si le chauffage est coupé<br>
+           <strong class ="bonne-réponse">Conserve :</strong> Nécessaire pour tenir le plus longtemps possible sans sortir <br>
+           <strong class ="bonne-réponse">Argent :</strong> En cas d'évacuation il est pratique d'avoir un peu d'argent de côté<br>
+           <strong class ="bonne-réponse">Jeu de carte :</strong> Utile pour s'occuper si l'alerte dure longtemps <br>
+           <strong class ="bonne-réponse">Scotch :</strong> Indispensable pour calfeutrer fenêtres et portes<br>
+           <strong class ="bonne-réponse">Radio :</strong> Indispensable pour s'informr sur l'évolution de la situation<br>
+           <strong class ="bonne-réponse">Clés :</strong> Pratique pour ne pas les chercher en cas d'alerte<br>
+           <strong class = "mauvaise-réponse">Papier toilette :</strong> Cela n'est pas une nécessité absolue pour votre survie <br>
+           <strong class = "mauvaise-réponse">Chaussettes :</strong> Une couverture est plus efficace pour se réchauffer <br>
+           <strong class = "mauvaise-réponse">Mouchoires :</strong> Cela n'est pas une nécessité absolue pour votre survie <br>
+           <strong class = "mauvaise-réponse">Bougies :</strong> Même utilité qu'une lampe torche avec cependant un plus grand risque incendie <br>
+           <strong class = "mauvaise-réponse">Nounours :</strong> Cela n'est pas une nécessité absolue pour votre survie <br>
+           <strong class = "mauvaise-réponse">Ventilateur :</strong> Cela n'est pas une nécessité absolue pour votre survie <br>
+           <strong class = "mauvaise-réponse">Oreiller :</strong> Cela n'est pas une nécessité absolue pour votre survie <br>
+           <strong class = "mauvaise-réponse">Briquet :</strong> Dangereux en raison du risque incendie qu'il peut exister en cas d'alerte <br>
         </p>
       </div>
     </div>
