@@ -315,6 +315,12 @@
     height: 20px;
     }
 
+    .image_logo{
+      width: 100%; 
+      max-width:70px; 
+      height: auto;
+    }
+
     @media (max-width: 1080px) {
       .game-container {
         flex-direction: column;
@@ -347,6 +353,10 @@
       .home-link {
       padding: 8px;
       }
+
+      .image_logo{
+        max-width: 45px;
+      }
     }
   </style>
 </head>
@@ -354,7 +364,7 @@
 <!-- Header -->
 <header id="header" class="header">
   <div class="logo">
-    <img src="Src/Images/logo.png" style="width: 100%; max-width:70px; height: auto;" alt="Logo">
+    <img src="Src/Images/logo.png" class = image_logo>
   </div>
   <div id="header-title" class="header-title">
     <h1>Créé ton kit d'urgence !</h1>
@@ -401,7 +411,7 @@
         <div>
           <p class="texte-explicatif">
             <strong class="bonne-réponse">Lunettes :</strong> Pratique pour ne pas les chercher en cas d'alerte <br>
-            <strong class="bonne-réponse">Pile :</strong> Indispensable pour recharger lampe torches et radios<br>
+            <strong class="bonne-réponse">Pile :</strong> Indispensable pour recharger lampes torches et radios<br>
             <strong class="bonne-réponse">Bouteille d'eau :</strong> Nécessaire pour tenir le plus longtemps possible sans sortir<br>
             <strong class="bonne-réponse">Kit de soin :</strong> Utile en cas de petites blessures <br>
             <strong class="bonne-réponse">Lampe torche :</strong> Indispensable en cas de coupure d'électricité<br>
@@ -409,8 +419,8 @@
             <strong class="bonne-réponse">Couteau suisse :</strong> Pratique pour effectuer tout type de petites tâches nécessaires en cas d'alerte<br>
             <strong class="bonne-réponse">Couverture :</strong> Indispensable en hiver si le chauffage est coupé<br>
             <strong class="bonne-réponse">Conserve :</strong> Nécessaire pour tenir le plus longtemps possible sans sortir <br>
-            <strong class="bonne-réponse">Argent :</strong> En cas d'évacuation il est pratique d'avoir un peu d'argent de côté<br>
-            <strong class="bonne-réponse">Jeu de carte :</strong> Utile pour s'occuper si l'alerte dure longtemps <br>
+            <strong class="bonne-réponse">Argent :</strong> En cas d'évacuation il est pratique d'avoir un peu d'argent liquide de côté<br>
+            <strong class="bonne-réponse">Jeu de cartes :</strong> Utile pour s'occuper si l'alerte dure longtemps <br>
             <strong class="bonne-réponse">Scotch :</strong> Indispensable pour calfeutrer fenêtres et portes<br>
             <strong class="bonne-réponse">Radio :</strong> Indispensable pour s'informer sur l'évolution de la situation<br>
             <strong class="bonne-réponse">Clés :</strong> Pratique pour ne pas les chercher en cas d'alerte<br>
